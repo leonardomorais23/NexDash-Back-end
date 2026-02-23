@@ -1,5 +1,5 @@
 <?php
-namespace App\Http\Controllers\Auth;
+namespace App\Http\Controllers\Logout;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;

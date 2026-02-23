@@ -15,5 +15,5 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->statefulApi();
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->render(fn (Exception $e) => response()->json(['error' => $e->getMessage()], $e->getCode() ?: 400));
     })->create();
