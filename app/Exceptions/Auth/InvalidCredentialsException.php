@@ -1,10 +1,14 @@
 <?php
+
 namespace App\Exceptions\Auth;
 
-use Exception;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
-class InvalidCredentialsException extends Exception
+class InvalidCredentialsException extends HttpException
 {
-    protected $message = 'Credenciais inválidas.';
-    protected $code = 401;
+    public function __construct(
+        string $message = 'Credenciais inválidas.'
+    ) {
+        parent::__construct(401, $message);
+    }
 }

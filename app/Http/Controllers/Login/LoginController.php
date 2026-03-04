@@ -14,19 +14,22 @@ class LoginController extends Controller
         private readonly LoginService $loginService
     ) {}
 
-    /**
-     * @throws InvalidCredentialsException
-     */
     public function login(LoginRequest $request): JsonResponse
     {
-        $credentials = $request->only(['email', 'password']);
-
-        $user = $this->loginService->execute($credentials);
+        $user = $this->loginService->execute($request->validated());
 
         $request->session()->regenerate();
 
         return response()->json([
             'user' => $user,
-        ]);
+        ])->cookie(
+            'is_logged_in',
+            'true',
+            config('session.lifetime'),
+            '/',
+            null,
+            config('app.env') === 'production',
+            false
+        );
     }
 }
