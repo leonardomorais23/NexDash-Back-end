@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Login;
 
-use App\Exceptions\Auth\InvalidCredentialsException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Login\LoginRequest;
 use Illuminate\Http\JsonResponse;
@@ -12,7 +11,9 @@ class LoginController extends Controller
 {
     public function __construct(
         private readonly LoginService $loginService
-    ) {}
+    )
+    {
+    }
 
     public function login(LoginRequest $request): JsonResponse
     {
