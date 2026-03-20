@@ -4,16 +4,14 @@ namespace App\Http\Controllers\Login;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Login\LoginRequest;
-use Illuminate\Http\JsonResponse;
 use App\Services\Login\LoginService;
+use Illuminate\Http\JsonResponse;
 
 class LoginController extends Controller
 {
     public function __construct(
         private readonly LoginService $loginService
-    )
-    {
-    }
+    ) {}
 
     public function login(LoginRequest $request): JsonResponse
     {
@@ -22,7 +20,11 @@ class LoginController extends Controller
         $request->session()->regenerate();
 
         return response()->json([
-            'user' => $user,
+            'user' => [
+                'id'    => $user->id,
+                'name'  => $user->name,
+                'email' => $user->email,
+            ],
         ])->cookie(
             'is_logged_in',
             'true',
