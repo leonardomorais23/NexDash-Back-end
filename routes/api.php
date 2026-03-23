@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Login\LoginController;
 use App\Http\Controllers\Logout\LogoutController;
 use App\Http\Controllers\Register\RegisterController;
@@ -14,4 +15,9 @@ Route::middleware('auth:sanctum')->group(function () {
         return $request->user();
     });
     Route::post('/logout', LogoutController::class . '@logout');
+
+    Route::prefix('dashboard')->group(function () {
+        Route::get('/modules', [DashboardController::class, 'index']);
+        Route::get('/{id}', [DashboardController::class, 'show']);
+    });
 });
