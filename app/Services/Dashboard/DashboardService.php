@@ -46,8 +46,6 @@ class DashboardService
     {
         $team = DashboardTeam::where('slug', $slug)->firstOrFail();
 
-        $latest = $team->snapshots()->latest('recorded_at')->first();
-
         $history = $team->snapshots()
             ->whereDate('recorded_at', Carbon::today())
             ->orderBy('recorded_at', 'asc')
@@ -60,12 +58,12 @@ class DashboardService
 
         return [
             'metrics' => [
-                'pendentes' => $latest->pendentes ?? 0,
-                'abertas' => $latest->abertas ?? 0,
-                'todos' => $latest->total_volume ?? 0,
-                'tempoEspera' => $latest ? $this->formatInterval($latest->tempo_espera_min) : '0 D 0 Hr 0 Min',
-                'tempoPrimeiraResp' => $latest ? $this->formatInterval($latest->tempo_primeira_resp_min) : '0 D 0 Hr 0 Min',
-                'tempoResolucao' => $latest ? $this->formatInterval($latest->tempo_resolucao_min) : '0 D 0 Hr 0 Min',
+                'pendentes' => $team->pendentes ?? 0,
+                'abertas'   => $team->abertas ?? 0,
+                'todos'     => $team->total_volume ?? 0,
+                'tempoEspera'       => $this->formatInterval($team->tempo_espera_min ?? 0),
+                'tempoPrimeiraResp' => $this->formatInterval($team->tempo_primeira_resp_min ?? 0),
+                'tempoResolucao'    => $this->formatInterval($team->tempo_resolucao_min ?? 0),
             ],
             'history' => $history->values()
         ];

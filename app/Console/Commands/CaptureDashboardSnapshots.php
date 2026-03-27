@@ -30,7 +30,7 @@ class CaptureDashboardSnapshots extends Command
             DashboardSnapshot::create([
                 'dashboard_team_id'       => $team->id,
                 'pendentes'               => $team->pendentes ?? 0,
-                'abertas'                 => $team->abertas ?? 0, // ADICIONE ESTA LINHA
+                'abertas'                 => $team->abertas ?? 0,
                 'resolvidas'              => $team->resolvidas ?? 0,
                 'total_volume'            => $team->total_volume ?? 0,
                 'tempo_espera_min'        => $team->tempo_espera_min ?? 0,
