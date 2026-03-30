@@ -4,10 +4,10 @@ namespace App\Services\Dashboard;
 
 use App\Models\Dashboard\DashboardTeam;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class DashboardService
 {
-
     private function formatInterval(int $totalMinutes): string
     {
         if ($totalMinutes <= 0) return "0 Min";
@@ -20,26 +20,32 @@ class DashboardService
 
         if ($days > 0) $parts[] = "{$days} D";
         if ($hours > 0) $parts[] = "{$hours} Hr";
-
-        if ($min > 0 || empty($parts)) {
-            $parts[] = "{$min} Min";
-        }
+        if ($min > 0 || empty($parts)) $parts[] = "{$min} Min";
 
         return implode(' ', $parts);
     }
 
-
     public function getAllActiveTeams()
     {
+        $user = Auth::user();
+        $userPermissions = $user->getAllPermissions()->pluck('name')->toArray();
+        $accessibleDashboardIds = $user->dashboardAccess->pluck('dashboard_team_id')->toArray();
+
         return DashboardTeam::where('is_active', true)
+            ->whereIn('id', $accessibleDashboardIds)
             ->get()
+            ->filter(function ($team) use ($userPermissions) {
+                $slugWithoutGestor = str_replace('-gestor', '', $team->slug);
+                return in_array("dashboard:{$slugWithoutGestor}:read", $userPermissions);
+            })
             ->map(function ($team) {
                 return [
                     'id'    => (string) $team->slug,
                     'title' => $team->name,
                     'color' => 'text-emerald-400',
                 ];
-            });
+            })
+            ->values();
     }
 
     public function getDashboardDataBySlug(string $slug): array

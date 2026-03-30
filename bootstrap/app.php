@@ -5,6 +5,9 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Validation\ValidationException;
+use Spatie\Permission\Middleware\PermissionMiddleware;
+use Spatie\Permission\Middleware\RoleMiddleware;
+use Spatie\Permission\Middleware\RoleOrPermissionMiddleware;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -16,17 +19,21 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->statefulApi();
+
+        $middleware->alias([
+            'permission' => PermissionMiddleware::class,
+            'role' => RoleMiddleware::class,
+            'role_or_permission' => RoleOrPermissionMiddleware::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (Throwable $e) {
-            // 1. Trata erro de autenticação (Garante o status 401)
             if ($e instanceof AuthenticationException) {
                 return response()->json([
                     'message' => 'Não autenticado.',
                 ], 401);
             }
 
-            // 2. Tratamento de validação
             if ($e instanceof ValidationException) {
                 return response()->json([
                     'message' => 'Os dados fornecidos são inválidos.',
@@ -34,14 +41,12 @@ return Application::configure(basePath: dirname(__DIR__))
                 ], 422);
             }
 
-            // 3. Se for uma HttpException conhecida
             if ($e instanceof HttpExceptionInterface) {
                 return response()->json([
-                    'message' => $e->getMessage(),
+                    'message' => $e->getMessage() ?: 'Acesso negado.',
                 ], $e->getStatusCode());
             }
 
-            // 4. Erro genérico (500)
             return response()->json([
                 'message' => config('app.debug') ? $e->getMessage() : 'Erro interno do servidor.',
             ], 500);

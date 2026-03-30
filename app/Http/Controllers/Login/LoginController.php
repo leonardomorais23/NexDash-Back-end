@@ -16,7 +16,7 @@ class LoginController extends Controller
     public function login(LoginRequest $request): JsonResponse
     {
         $user = $this->loginService->execute($request->validated());
-
+        $user->refresh();
         $request->session()->regenerate();
 
         return response()->json([
@@ -24,6 +24,8 @@ class LoginController extends Controller
                 'id'    => $user->id,
                 'name'  => $user->name,
                 'email' => $user->email,
+                'roles' => $user->getRoleNames(),
+                'permissions' => $user->getAllPermissions()->pluck('name'),
             ],
         ])->cookie(
             'is_logged_in',
