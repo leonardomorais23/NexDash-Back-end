@@ -14,6 +14,8 @@ class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
     use HasApiTokens, HasFactory, Notifiable, HasRoles;
+
+    public mixed $dashboardAccess;
     protected string $guard_name = 'api';
 
     /**

@@ -2,16 +2,14 @@
 
 namespace App\Http\Controllers\Dashboard;
 
-use App\Http\Controllers\Controller;
 use App\Services\Dashboard\DashboardService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
-    public function __construct(
-        protected DashboardService $service
-    ) {}
+    public function __construct(protected DashboardService $service) {}
 
     public function index(): JsonResponse
     {
@@ -21,10 +19,9 @@ class DashboardController extends Controller
 
     public function show(string $id): JsonResponse
     {
-        $slugWithoutGestor = str_replace('-gestor', '', $id);
-        $userPermissions = Auth::user()->getAllPermissions()->pluck('name')->toArray();
+        $user = Auth::user();
 
-        if (!in_array("dashboard:{$slugWithoutGestor}:read", $userPermissions)) {
+        if (!$user->can("dashboard:{$id}:read")) {
             return response()->json(['error' => 'Sem permissão'], 403);
         }
 
