@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Dashboard;
 
+use App\Exceptions\Auth\ForbiddenException;
+use App\Exceptions\Dashboard\DashboardNotFoundException;
 use App\Services\Dashboard\DashboardService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
@@ -13,8 +15,7 @@ class DashboardController extends Controller
 
     public function index(): JsonResponse
     {
-        $dashboards = $this->service->getAllActiveTeams();
-        return response()->json($dashboards);
+        return response()->json($this->service->getAllActiveTeams());
     }
 
     public function show(string $id): JsonResponse
@@ -22,14 +23,13 @@ class DashboardController extends Controller
         $user = Auth::user();
 
         if (!$user->can("dashboard:{$id}:read")) {
-            return response()->json(['error' => 'Sem permissão'], 403);
+            throw new ForbiddenException('Sem permissão');
         }
 
         try {
-            $data = $this->service->getDashboardDataBySlug($id);
-            return response()->json($data);
+            return response()->json($this->service->getDashboardDataBySlug($id));
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Dashboard não encontrado'], 404);
+            throw new DashboardNotFoundException('Dashboard não encontrado.');
         }
     }
 }

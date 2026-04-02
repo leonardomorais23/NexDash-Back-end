@@ -8,4 +8,7 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-Schedule::command('dashboard:capture-snapshots')->everyThirtyMinutes();
+Schedule::command('app:capture-dashboard-snapshots')
+    ->everyThirtyMinutes()
+    ->withoutOverlapping();
+

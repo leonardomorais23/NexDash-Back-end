@@ -16,7 +16,7 @@ class LoginService
     public function execute(array $credentials): User
     {
         if (!Auth::attempt($credentials)) {
-            throw new InvalidCredentialsException();
+            throw new InvalidCredentialsException('Credenciais inválidas.');
         }
 
         /** @var User $user */

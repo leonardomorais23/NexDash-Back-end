@@ -15,7 +15,7 @@ class DashboardSnapshotSeeder extends Seeder
         $now = Carbon::now();
 
         foreach ($teams as $team) {
-            for ($i = 48; $i >= 0; $i--) {
+            for ($i = 1; $i >= 0; $i--) {
                 $time = $now->copy()->subMinutes($i * 30);
 
                 DashboardSnapshot::create([
