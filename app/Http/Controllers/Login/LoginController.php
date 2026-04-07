@@ -15,26 +15,20 @@ class LoginController extends Controller
 
     public function login(LoginRequest $request): JsonResponse
     {
-        $user = $this->loginService->execute($request->validated());
-        $user->refresh();
+        $userModel = $this->loginService->execute($request->validated());
+
+        $user = [
+            'id'          => $userModel->id,
+            'name'        => $userModel->name,
+            'email'       => $userModel->email,
+            'roles'       => $userModel->getRoleNames(),
+            'permissions' => $userModel->getAllPermissions()->pluck('name'),
+        ];
+
         $request->session()->regenerate();
 
-        return response()->json([
-            'user' => [
-                'id'    => $user->id,
-                'name'  => $user->name,
-                'email' => $user->email,
-                'roles' => $user->getRoleNames(),
-                'permissions' => $user->getAllPermissions()->pluck('name'),
-            ],
-        ])->cookie(
-            'is_logged_in',
-            'true',
-            config('session.lifetime'),
-            '/',
-            null,
-            config('app.env') === 'production',
-            false
-        );
+        return response()->json(['user' => $user])
+            ->cookie('is_logged_in', 'true', 1440, '/', null, config('app.env') === 'production', false) // httpOnly: false
+            ->cookie('auth_user', json_encode($user), 1440, '/', null, config('app.env') === 'production', false);
     }
 }
