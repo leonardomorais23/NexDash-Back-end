@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\Dashboard\DashboardUserAccess;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -15,7 +14,6 @@ class User extends Authenticatable
     /** @use HasFactory<UserFactory> */
     use HasApiTokens, HasFactory, Notifiable, HasRoles;
 
-    public mixed $dashboardAccess;
     protected string $guard_name = 'api';
 
     /**
@@ -50,9 +48,5 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
-    }
-    public function dashboardAccess()
-    {
-        return $this->hasMany(DashboardUserAccess::class);
     }
 }

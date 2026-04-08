@@ -28,7 +28,7 @@ class LoginController extends Controller
         $request->session()->regenerate();
 
         return response()->json(['user' => $user])
-            ->cookie('is_logged_in', 'true', 1440, '/', null, config('app.env') === 'production', false) // httpOnly: false
+            ->cookie('is_logged_in', 'true', 1440, '/', null, config('app.env') === 'production', false)
             ->cookie('auth_user', json_encode($user), 1440, '/', null, config('app.env') === 'production', false);
     }
 }
