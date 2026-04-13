@@ -28,7 +28,7 @@ class RoleAndPermissionSeeder extends Seeder
         $user = User::where('email', 'admin@email.com')->first();
         if ($user) {
             $user->assignRole($roleAdmin);
-            $this->command->info("Role Admin atribuída ao usuário Leleo com todas as permissões de dashboards ativos!");
+            $this->command->info("Role Admin atribuída ao usuário $user->name com todas as permissões de dashboards ativos!");
         }
     }
 }

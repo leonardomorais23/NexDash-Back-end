@@ -4,6 +4,7 @@ use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Login\LoginController;
 use App\Http\Controllers\Logout\LogoutController;
 use App\Http\Controllers\Register\RegisterController;
+use App\Http\Controllers\Settings\SettingsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -28,4 +29,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/modules', [DashboardController::class, 'index']);
         Route::get('/{id}', [DashboardController::class, 'show']);
     });
+
+    Route::prefix('settings')->group(function () {
+       Route::get('/users', [SettingsController::class, 'getUsersTableConfig']);
+    });
+    Route::patch('/editUser/{id}', [SettingsController::class, 'updateUser']);
 });
