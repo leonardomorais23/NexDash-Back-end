@@ -7,7 +7,9 @@ use App\Http\Requests\Settings\GetUsersRequest;
 use App\Http\Requests\Settings\UpdateUserRequest;
 use App\Http\Resources\Settings\UserTableResource;
 use App\Services\Settings\SettingsService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Spatie\Permission\Models\Permission;
 
 class SettingsController extends Controller
 {
@@ -21,10 +23,14 @@ class SettingsController extends Controller
 
         return UserTableResource::collection($users);
     }
-    public function updateUser(UpdateUserRequest $updateUserRequest, int $id): AnonymousResourceCollection
+    public function updateUser(UpdateUserRequest $updateUserRequest, int $id)
     {
         $this->settingsService->updateUser($id, $updateUserRequest->validated());
 
-        return $this->getUsersTableConfig(new GetUsersRequest());
+        return UserTableResource::collection($this->settingsService->getUsers(new GetUsersRequest()));
+    }
+    public function getAllPermissions(): JsonResponse
+    {
+        return response()->json($this->settingsService->getDashboardPermissions(), 200, [], JSON_UNESCAPED_UNICODE);
     }
 }

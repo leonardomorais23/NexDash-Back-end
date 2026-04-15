@@ -10,7 +10,10 @@ class RegisterService
     {
         $data['password'] = Hash::make($data['password']);
 
-        return User::create($data);
-    }
+        $user = User::create($data);
 
+        $user->assignRole('colaborador');
+
+        return $user;
+    }
 }

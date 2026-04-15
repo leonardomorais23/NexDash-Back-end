@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/login', LoginController::class . '@login');
-Route::post('Register', RegisterController::class . '@register');
+Route::post('/register', RegisterController::class . '@register');
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
@@ -23,6 +23,7 @@ Route::middleware('auth:sanctum')->group(function () {
             'permissions' => $user->getAllPermissions()->pluck('name'),
         ]);
     });
+    Route::get('/permissions', [SettingsController::class, 'getAllPermissions']);
     Route::post('/logout', LogoutController::class . '@logout');
 
     Route::prefix('dashboard')->group(function () {
@@ -32,6 +33,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('settings')->group(function () {
        Route::get('/users', [SettingsController::class, 'getUsersTableConfig']);
+       Route::patch('/editUser/{id}', [SettingsController::class, 'updateUser']);
     });
-    Route::patch('/editUser/{id}', [SettingsController::class, 'updateUser']);
+
 });

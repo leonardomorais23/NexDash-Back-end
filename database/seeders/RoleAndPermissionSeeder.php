@@ -15,20 +15,28 @@ class RoleAndPermissionSeeder extends Seeder
     {
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
-        $roleAdmin = Role::findOrCreate('admin', 'api');
+        $roleAdmin       = Role::findOrCreate('admin', 'api');
+        $roleGerente     = Role::findOrCreate('gerente', 'api');
+        $roleColaborador = Role::findOrCreate('colaborador', 'api');
 
         $dashboards = DashboardTeam::where('is_active', true)->get();
 
         foreach ($dashboards as $team) {
             $permissionName = "dashboard:{$team->slug}:read";
-            $permission = Permission::findOrCreate($permissionName, 'api');
-            $roleAdmin->givePermissionTo($permission);
+            Permission::findOrCreate($permissionName, 'api');
         }
+
+        $allPermissions = Permission::all();
+        $roleAdmin->syncPermissions($allPermissions);
 
         $user = User::where('email', 'admin@email.com')->first();
         if ($user) {
-            $user->assignRole($roleAdmin);
-            $this->command->info("Role Admin atribuída ao usuário $user->name com todas as permissões de dashboards ativos!");
+            $user->syncRoles([$roleAdmin]);
+
+            $this->command->info("--- Configuração Concluída ---");
+            $this->command->info("Usuário: {$user->name}");
+            $this->command->info("Role: Admin (com " . $allPermissions->count() . " permissões)");
+            $this->command->info("Roles 'gerente' e 'colaborador' criadas (vazias).");
         }
     }
 }
