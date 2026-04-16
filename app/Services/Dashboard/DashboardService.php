@@ -2,8 +2,10 @@
 
 namespace App\Services\Dashboard;
 
+use App\Http\Requests\Dashboard\GetDashRequest;
 use App\Models\Dashboard\DashboardTeam;
 use Carbon\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
 class DashboardService
@@ -34,7 +36,7 @@ class DashboardService
             return $user->can("dashboard:{$team->slug}:read");
         })->map(function ($team) {
             return [
-                'id'    => (string) $team->slug,
+                'slug'    => (string) $team->slug,
                 'title' => $team->name,
                 'color' => 'text-emerald-400',
             ];
@@ -66,5 +68,9 @@ class DashboardService
             ],
             'history' => $history->values()
         ];
+    }
+    public function getDashboard(GetDashRequest $getDashRequest): Collection
+    {
+        return DashboardTeam::all();
     }
 }

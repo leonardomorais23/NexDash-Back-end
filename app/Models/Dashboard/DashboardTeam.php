@@ -18,4 +18,8 @@ class DashboardTeam extends Model
     {
         return $this->hasMany(DashboardSnapshot::class);
     }
+    public function getStatusFormatadoAttribute()
+    {
+        return $this->is_active == 1 ? 'Ativo' : 'Inativo';
+    }
 }

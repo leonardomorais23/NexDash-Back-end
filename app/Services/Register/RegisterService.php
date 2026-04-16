@@ -2,18 +2,19 @@
 
 namespace App\Services\Register;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class RegisterService
 {
     public function execute(array $data): User
     {
-        $data['password'] = Hash::make($data['password']);
+        return DB::transaction(function () use ($data) {
+            $data['password'] = Hash::make($data['password']);
+            $user = User::create($data);
+            $user->assignRole('colaborador');
 
-        $user = User::create($data);
-
-        $user->assignRole('colaborador');
-
-        return $user;
+            return $user;
+        });
     }
 }

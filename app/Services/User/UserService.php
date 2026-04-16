@@ -1,13 +1,12 @@
 <?php
 
-namespace App\Services\Settings;
+namespace App\Services\User;
 
-use App\Http\Requests\Settings\GetUsersRequest;
+use App\Http\Requests\User\GetUsersRequest;
 use App\Models\User;
 use Illuminate\Support\Collection;
-use Spatie\Permission\Models\Permission;
 
-class SettingsService
+class UserService
 {
     public function getUsers(GetUsersRequest $getUsersRequest): Collection
     {
@@ -29,18 +28,5 @@ class SettingsService
         if (array_key_exists('permissions', $data)) {
             $user->syncPermissions(array_filter((array)$data['permissions']));
         }
-    }
-    public function getDashboardPermissions(): Collection
-    {
-        return Permission::all()->map(function ($perm) {
-            $cleanLabel = str_replace(['dashboard:', ':read'], '', $perm->name);
-            $cleanLabel = str_replace('-', ' ', $cleanLabel);
-            $cleanLabel = preg_replace('/\s+/', ' ', $cleanLabel);
-
-            return [
-                'id'    => $perm->name,
-                'label' => mb_convert_case(trim($cleanLabel), MB_CASE_TITLE, "UTF-8")
-            ];
-        });
     }
 }

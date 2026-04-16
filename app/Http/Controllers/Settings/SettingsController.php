@@ -3,34 +3,36 @@
 namespace App\Http\Controllers\Settings;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Settings\GetUsersRequest;
-use App\Http\Requests\Settings\UpdateUserRequest;
-use App\Http\Resources\Settings\UserTableResource;
-use App\Services\Settings\SettingsService;
-use Illuminate\Http\JsonResponse;
+use App\Http\Requests\Dashboard\GetDashRequest;
+use App\Http\Requests\User\GetUsersRequest;
+use App\Http\Requests\User\UpdateUserRequest;
+use App\Http\Resources\Settings\DashTableResource;
+use App\Http\Resources\Settings\UserResource;
+use App\Services\Dashboard\DashboardService;
+use App\Services\User\UserService;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Spatie\Permission\Models\Permission;
 
 class SettingsController extends Controller
 {
     public function __construct(
-        private readonly SettingsService $settingsService
+        private readonly UserService      $settingsService,
+        private readonly DashboardService $dashboardService
     ) {}
 
-    public function getUsersTableConfig(GetUsersRequest $settingsRequest): AnonymousResourceCollection
+    public function getUsersTableConfig(GetUsersRequest $getUsersRequest): AnonymousResourceCollection
     {
-        $users = $this->settingsService->getUsers($settingsRequest);
-
-        return UserTableResource::collection($users);
+        return UserResource::collection($this->settingsService->getUsers($getUsersRequest));
     }
+
     public function updateUser(UpdateUserRequest $updateUserRequest, int $id)
     {
         $this->settingsService->updateUser($id, $updateUserRequest->validated());
 
-        return UserTableResource::collection($this->settingsService->getUsers(new GetUsersRequest()));
+        return UserResource::collection($this->settingsService->getUsers(new GetUsersRequest()));
     }
-    public function getAllPermissions(): JsonResponse
+
+    public function getDashboardsTableConfig(GetDashRequest $getDashRequest): AnonymousResourceCollection
     {
-        return response()->json($this->settingsService->getDashboardPermissions(), 200, [], JSON_UNESCAPED_UNICODE);
+        return DashTableResource::collection($this->dashboardService->getDashboard($getDashRequest));
     }
 }

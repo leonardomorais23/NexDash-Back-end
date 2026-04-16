@@ -21,8 +21,8 @@ class LogoutController extends Controller
 
         return response()->json([
             'message' => 'Logout realizado com sucesso'
-        ], 200)->withCookie(
-            Cookie::forget('is_logged_in')
-        );
+        ], 200)
+            ->withCookie(Cookie::forget('is_logged_in'))
+            ->withCookie(Cookie::forget('auth_user'));
     }
 }

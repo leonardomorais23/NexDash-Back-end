@@ -17,12 +17,12 @@ class DashboardController extends Controller
         return response()->json($this->service->getAllActiveTeams());
     }
 
-    public function show(ShowDashboardRequest $_request, string $id): JsonResponse
+    public function show(ShowDashboardRequest $_showDashboardRequest, string $slug): JsonResponse
     {
         try {
-            return response()->json($this->service->getDashboardDataBySlug($id));
+            return response()->json($this->service->getDashboardDataBySlug($slug));
         } catch (\Exception $e) {
-            throw new DashboardNotFoundException('Dashboard não encontrado.');
+            throw new DashboardNotFoundException('Dashboard [{$slug}] não encontrado.');
         }
     }
 }
