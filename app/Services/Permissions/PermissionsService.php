@@ -19,4 +19,15 @@ class PermissionsService
                 ->title()
         ]);
     }
+    public function updateDashboardPermission(string $oldSlug, string $newSlug): void
+    {
+        $oldName = "dashboard:{$oldSlug}:read";
+        $newName = "dashboard:{$newSlug}:read";
+
+        Permission::where('name', $oldName)
+            ->where('guard_name', 'api')
+            ->update(['name' => $newName]);
+
+        Permission::firstOrCreate(['name' => $newName, 'guard_name' => 'api']);
+    }
 }

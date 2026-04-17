@@ -3,13 +3,20 @@
 namespace App\Services\Dashboard;
 
 use App\Http\Requests\Dashboard\GetDashRequest;
+use App\Http\Requests\Dashboard\updateDashRequest;
 use App\Models\Dashboard\DashboardTeam;
+use App\Services\Permissions\PermissionsService;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
-class DashboardService
+readonly class DashboardService
 {
+    public function __construct(
+        private PermissionsService $permissionsService
+    ) {}
     private function formatInterval(int $totalMinutes): string
     {
         if ($totalMinutes <= 0) return "0 Min";
@@ -72,5 +79,24 @@ class DashboardService
     public function getDashboard(GetDashRequest $getDashRequest): Collection
     {
         return DashboardTeam::all();
+    }
+    public function updateDashboards(int $id, array $data): void
+    {
+        DB::transaction(function () use ($id, $data) {
+            $dash = DashboardTeam::findOrFail($id);
+
+            $oldSlug = $dash->slug;
+            $newSlug = Str::slug($data['name']);
+
+            $dash->update([
+                'name'      => $data['name'],
+                'slug'      => $newSlug,
+                'is_active' => $data['status'] === 'ativo',
+            ]);
+
+            if ($oldSlug !== $newSlug) {
+                $this->permissionsService->updateDashboardPermission($oldSlug, $newSlug);
+            }
+        });
     }
 }

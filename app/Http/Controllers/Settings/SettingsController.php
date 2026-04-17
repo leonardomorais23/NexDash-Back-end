@@ -3,10 +3,11 @@
 namespace App\Http\Controllers\Settings;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Dashboard\UpdateDashRequest;
 use App\Http\Requests\Dashboard\GetDashRequest;
 use App\Http\Requests\User\GetUsersRequest;
 use App\Http\Requests\User\UpdateUserRequest;
-use App\Http\Resources\Settings\DashTableResource;
+use App\Http\Resources\Settings\DashResource;
 use App\Http\Resources\Settings\UserResource;
 use App\Services\Dashboard\DashboardService;
 use App\Services\User\UserService;
@@ -24,15 +25,20 @@ class SettingsController extends Controller
         return UserResource::collection($this->settingsService->getUsers($getUsersRequest));
     }
 
-    public function updateUser(UpdateUserRequest $updateUserRequest, int $id)
+    public function updateUser(UpdateUserRequest $updateUserRequest, int $id): AnonymousResourceCollection
     {
         $this->settingsService->updateUser($id, $updateUserRequest->validated());
-
         return UserResource::collection($this->settingsService->getUsers(new GetUsersRequest()));
     }
 
     public function getDashboardsTableConfig(GetDashRequest $getDashRequest): AnonymousResourceCollection
     {
-        return DashTableResource::collection($this->dashboardService->getDashboard($getDashRequest));
+        return DashResource::collection($this->dashboardService->getDashboard($getDashRequest));
+    }
+
+    public function updateDashboards(UpdateDashRequest $updateDashRequest, int $id): AnonymousResourceCollection
+    {
+        $this->dashboardService->updateDashboards($id, $updateDashRequest->validated());
+        return DashResource::collection($this->dashboardService->getDashboard(new GetDashRequest()));
     }
 }
