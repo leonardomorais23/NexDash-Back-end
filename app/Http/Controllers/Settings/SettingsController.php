@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Settings;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Dashboard\CreateDashRequest;
 use App\Http\Requests\Dashboard\UpdateDashRequest;
 use App\Http\Requests\Dashboard\GetDashRequest;
 use App\Http\Requests\User\GetUsersRequest;
@@ -39,6 +40,13 @@ class SettingsController extends Controller
     public function updateDashboards(UpdateDashRequest $updateDashRequest, int $id): AnonymousResourceCollection
     {
         $this->dashboardService->updateDashboards($id, $updateDashRequest->validated());
+        return DashResource::collection($this->dashboardService->getDashboard(new GetDashRequest()));
+    }
+
+    public function createDashboard(CreateDashRequest $createDashRequest): AnonymousResourceCollection
+    {
+        $this->dashboardService->createDashboard($createDashRequest->validated());
+
         return DashResource::collection($this->dashboardService->getDashboard(new GetDashRequest()));
     }
 }

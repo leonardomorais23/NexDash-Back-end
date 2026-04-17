@@ -5,6 +5,7 @@ namespace App\Services\Permissions;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class PermissionsService
 {
@@ -29,5 +30,20 @@ class PermissionsService
             ->update(['name' => $newName]);
 
         Permission::firstOrCreate(['name' => $newName, 'guard_name' => 'api']);
+    }
+
+    public function createPermission(string $slug, array $roleNames): void
+    {
+        $permission = Permission::create([
+            'name' => "dashboard:{$slug}:read",
+            'guard_name' => 'api'
+        ]);
+
+        if (!empty($roleNames)) {
+            $roles = Role::whereIn('name', $roleNames)->get();
+            foreach ($roles as $role) {
+                $role->givePermissionTo($permission);
+            }
+        }
     }
 }

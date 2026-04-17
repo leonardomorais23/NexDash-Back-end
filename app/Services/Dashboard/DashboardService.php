@@ -3,7 +3,6 @@
 namespace App\Services\Dashboard;
 
 use App\Http\Requests\Dashboard\GetDashRequest;
-use App\Http\Requests\Dashboard\updateDashRequest;
 use App\Models\Dashboard\DashboardTeam;
 use App\Services\Permissions\PermissionsService;
 use Carbon\Carbon;
@@ -17,6 +16,41 @@ readonly class DashboardService
     public function __construct(
         private PermissionsService $permissionsService
     ) {}
+
+    public function createDashboard(array $data): void
+    {
+        DB::transaction(function () use ($data) {
+            $slug = Str::slug($data['name']);
+
+            DashboardTeam::create([
+                'name' => $data['name'],
+                'slug' => $slug,
+                'is_active' => true,
+            ]);
+
+            $this->permissionsService->createPermission($slug, $data['roles'] ?? []);
+        });
+    }
+    public function updateDashboards(int $id, array $data): void
+    {
+        DB::transaction(function () use ($id, $data) {
+            $dash = DashboardTeam::findOrFail($id);
+
+            $oldSlug = $dash->slug;
+            $newSlug = Str::slug($data['name']);
+
+            $dash->update([
+                'name'      => $data['name'],
+                'slug'      => $newSlug,
+                'is_active' => $data['status'] === 'ativo',
+            ]);
+
+            if ($oldSlug !== $newSlug) {
+                $this->permissionsService->updateDashboardPermission($oldSlug, $newSlug);
+            }
+        });
+    }
+
     private function formatInterval(int $totalMinutes): string
     {
         if ($totalMinutes <= 0) return "0 Min";
@@ -44,10 +78,15 @@ readonly class DashboardService
         })->map(function ($team) {
             return [
                 'slug'    => (string) $team->slug,
-                'title' => $team->name,
+                'name' => $team->name,
                 'color' => 'text-emerald-400',
             ];
         })->values();
+    }
+
+    public function getDashboard(GetDashRequest $getDashRequest): Collection
+    {
+        return DashboardTeam::all();
     }
 
     public function getDashboardDataBySlug(string $slug): array
@@ -76,27 +115,6 @@ readonly class DashboardService
             'history' => $history->values()
         ];
     }
-    public function getDashboard(GetDashRequest $getDashRequest): Collection
-    {
-        return DashboardTeam::all();
-    }
-    public function updateDashboards(int $id, array $data): void
-    {
-        DB::transaction(function () use ($id, $data) {
-            $dash = DashboardTeam::findOrFail($id);
 
-            $oldSlug = $dash->slug;
-            $newSlug = Str::slug($data['name']);
 
-            $dash->update([
-                'name'      => $data['name'],
-                'slug'      => $newSlug,
-                'is_active' => $data['status'] === 'ativo',
-            ]);
-
-            if ($oldSlug !== $newSlug) {
-                $this->permissionsService->updateDashboardPermission($oldSlug, $newSlug);
-            }
-        });
-    }
 }

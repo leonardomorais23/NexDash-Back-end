@@ -29,6 +29,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::prefix('settings')->group(function () {
+        Route::post('/dashboards', [SettingsController::class, 'createDashboard']);
         Route::get('/users', [SettingsController::class, 'getUsersTableConfig']);
         Route::get('/dashboards', [SettingsController::class, 'getDashboardsTableConfig']);
         Route::patch('/dashboards/{id}', [SettingsController::class, 'updateDashboards']);
