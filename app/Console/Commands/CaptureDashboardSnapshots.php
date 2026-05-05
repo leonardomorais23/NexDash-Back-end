@@ -9,9 +9,7 @@ use Carbon\Carbon;
 
 class CaptureDashboardSnapshots extends Command
 {
-
     protected $signature = 'app:capture-dashboard-snapshots';
-
 
     protected $description = 'Captura os dados atuais dos times e salva no histórico (snapshot)';
 
@@ -41,7 +39,6 @@ class CaptureDashboardSnapshots extends Command
 
             $this->line("✔ Snapshot salvo para: {$team->name}");
         }
-
         $this->info('Processo concluído com sucesso!');
     }
 }

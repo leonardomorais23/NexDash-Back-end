@@ -93,15 +93,28 @@ readonly class DashboardService
     {
         $team = DashboardTeam::where('slug', $slug)->firstOrFail();
 
-        $history = $team->snapshots()
+        $snapshots = $team->snapshots()
             ->whereDate('recorded_at', Carbon::today())
             ->orderBy('recorded_at', 'asc')
-            ->get()
-            ->map(fn($s) => [
+            ->get();
+
+        $history = $snapshots->map(function ($s, $index) use ($snapshots) {
+            if ($index === 0) {
+                return [
+                    'dateTime' => $s->recorded_at->format('H:i'),
+                    'atendimentosResolvidos' => $s->resolvidas,
+                    'atendimentosPendentes' => $s->pendentes
+                ];
+            }
+
+            $previous = $snapshots[$index - 1];
+
+            return [
                 'dateTime' => $s->recorded_at->format('H:i'),
-                'atendimentosResolvidos' => $s->resolvidas,
-                'atendimentosPendentes' => $s->pendentes
-            ]);
+                'atendimentosResolvidos' => max(0, $s->resolvidas - $previous->resolvidas),
+                'atendimentosPendentes' => max(0, $s->pendentes - $previous->pendentes)
+            ];
+        });
 
         return [
             'metrics' => [
@@ -115,6 +128,4 @@ readonly class DashboardService
             'history' => $history->values()
         ];
     }
-
-
 }

@@ -24,7 +24,7 @@ class DashboardTeamSeeder extends Seeder
             ],
             [
                 'name' => 'Financeiro - Gestor',
-                'slug' => 'financeiro-Gestor',
+                'slug' => 'financeiro-gestor',
                 'is_active' => true,
                 'pendentes' => 8,
                 'abertas' => 3,
@@ -36,7 +36,7 @@ class DashboardTeamSeeder extends Seeder
             ],
             [
                 'name' => 'SAC e Secretaria - Gestor',
-                'slug' => 'SAC e Secretaria - Gestor',
+                'slug' => 'sac e secretaria - gestor',
                 'is_active' => true,
                 'pendentes' => 12,
                 'abertas' => 5,
@@ -47,8 +47,8 @@ class DashboardTeamSeeder extends Seeder
                 'tempo_resolucao_min' => 480,
             ],
             [
-                'name' => 'Pedagógicod',
-                'slug' => 'Pedagógico',
+                'name' => 'Pedagógico',
+                'slug' => 'pedagógico',
                 'is_active' => true,
                 'pendentes' => 12,
                 'abertas' => 5,
@@ -96,7 +96,7 @@ class DashboardTeamSeeder extends Seeder
             ],
             [
                 'name' => 'Pós Vendas',
-                'slug' => 'pós Vendas',
+                'slug' => 'pós vendas',
                 'is_active' => true,
                 'pendentes' => 12,
                 'abertas' => 5,
